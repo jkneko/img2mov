@@ -5,6 +5,7 @@ from tkinter import messagebox
 from moviepy.editor import ImageClip, concatenate_videoclips, AudioFileClip
 from moviepy.video.fx.all import fadein, fadeout, resize
 from dotenv import load_dotenv
+import uuid
 
 # .envファイルの読み込み
 load_dotenv()
@@ -68,9 +69,8 @@ class App:
         bgm = bgm.subclip(0, video.duration)
         video = video.set_audio(bgm)
 
-        # 入力ファイル名をアンダーバーで繋げたものを出力ファイル名にする
-        base_names = [os.path.splitext(os.path.basename(f))[0] for f in self.image_files]
-        output_filename = "_".join(base_names) + ".mp4"
+        # ランダムなUUIDを使用して一意のファイル名を生成
+        output_filename = str(uuid.uuid4()) + ".mp4"
 
         # 画像の1枚目と同じパスに動画を保存
         output_path = os.path.join(os.path.dirname(self.image_files[0]), output_filename)
