@@ -49,7 +49,7 @@ class App:
         crf = int(os.getenv("CRF", 18))
 
         clips = []
-        for i, image in self.image_files:
+        for i, image in enumerate(self.image_files):  # 修正箇所
             clip = ImageClip(image, duration=display_duration)
             
             # ズームイン効果を追加
