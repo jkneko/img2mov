@@ -1,0 +1,6 @@
+tkinterdnd2
+moviepy
+python-dotenv
+Pillow==9.5.0
+
+
