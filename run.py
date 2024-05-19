@@ -44,13 +44,13 @@ class App:
 
         display_duration = int(os.getenv("DISPLAY_DURATION", 5))
         fade_duration = int(os.getenv("FADE_DURATION", 1))
-        fps = int(os.getenv("FPS", 60))
+        fps = int(os.getenv("FPS", 30))
         bitrate = os.getenv("BITRATE", "5000k")
         ffmpeg_preset = os.getenv("FFMPEG_PRESET", "slow")
         crf = int(os.getenv("CRF", 18))
 
         clips = []
-        for i, image in enumerate(self.image_files):  # 修正箇所
+        for i, image in enumerate(self.image_files):
             clip = ImageClip(image, duration=display_duration)
             
             # ズームイン効果を追加
@@ -66,6 +66,11 @@ class App:
 
         video = concatenate_videoclips(clips, method="compose")
         bgm = AudioFileClip(self.bgm_file)
+
+        # 動画の長さがBGMの長さを超えないようにする
+        if video.duration > bgm.duration:
+            video = video.subclip(0, bgm.duration)
+        
         bgm = bgm.subclip(0, video.duration)
         video = video.set_audio(bgm)
 
