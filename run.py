@@ -48,13 +48,14 @@ class App:
         bitrate = os.getenv("BITRATE", "5000k")
         ffmpeg_preset = os.getenv("FFMPEG_PRESET", "slow")
         crf = int(os.getenv("CRF", 18))
+        zoom_in_speed = float(os.getenv("ZOOM_IN_SPEED", 0.05))
 
         clips = []
         for i, image in enumerate(self.image_files):
             clip = ImageClip(image, duration=display_duration)
             
             # ズームイン効果を追加
-            clip = resize(clip, lambda t: 1 + 0.05 * t)
+            clip = resize(clip, lambda t: 1 + zoom_in_speed * t)
             
             # 最初の画像にはフェードインを適用しない
             if i == 0:
@@ -79,7 +80,8 @@ class App:
 
         # 画像の1枚目と同じパスに動画を保存
         output_path = os.path.join(os.path.dirname(self.image_files[0]), output_filename)
-        video.write_videofile(output_path, codec="libx264", fps=fps, bitrate=bitrate, ffmpeg_params=["-preset", ffmpeg_preset, "-crf", str(crf)])
+        video.write_videofile(output_path, codec="libx264", fps=fps, bitrate=bitrate, 
+                              ffmpeg_params=["-preset", ffmpeg_preset, "-crf", str(crf)])
         messagebox.showinfo("Success", f"Video created successfully! Saved as {output_path}")
 
 if __name__ == "__main__":
