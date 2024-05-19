@@ -19,8 +19,15 @@ class App:
         self.label = tk.Label(root, text="Drag and drop image files here", bg="lightgrey", width=80, height=20)
         self.label.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
 
-        self.process_button = tk.Button(root, text="Create Video", command=self.create_video, state=tk.DISABLED)
-        self.process_button.pack(pady=10)
+        # ボタンを水平に配置するためのフレームを追加
+        button_frame = tk.Frame(root)
+        button_frame.pack(pady=10)
+
+        self.clear_button = tk.Button(button_frame, text="Clear List", command=self.clear_list)
+        self.clear_button.pack(side=tk.LEFT, padx=5)
+
+        self.process_button = tk.Button(button_frame, text="Create Video", command=self.create_video, state=tk.DISABLED)
+        self.process_button.pack(side=tk.LEFT, padx=5)
 
         self.image_files = []
         self.bgm_file = os.path.expanduser(os.getenv("BGM_PATH", "./bgm.mp3"))
@@ -29,9 +36,15 @@ class App:
         self.root.dnd_bind('<<Drop>>', self.drop_files)
 
     def drop_files(self, event):
-        self.image_files = self.root.tk.splitlist(event.data)
+        new_files = self.root.tk.splitlist(event.data)
+        self.image_files.extend(new_files)
         self.label.config(text="\n".join(self.image_files))
         self.process_button.config(state=tk.NORMAL)
+
+    def clear_list(self):
+        self.image_files = []
+        self.label.config(text="Drag and drop image files here")
+        self.process_button.config(state=tk.DISABLED)
 
     def create_video(self):
         if not self.image_files:
@@ -83,6 +96,9 @@ class App:
         video.write_videofile(output_path, codec="libx264", fps=fps, bitrate=bitrate, 
                               ffmpeg_params=["-preset", ffmpeg_preset, "-crf", str(crf)])
         messagebox.showinfo("Success", f"Video created successfully! Saved as {output_path}")
+
+        # リストをクリア
+        self.clear_list()
 
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
